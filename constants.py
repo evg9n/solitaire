@@ -3,6 +3,13 @@ from os import environ, path, listdir
 from dotenv import load_dotenv
 
 
+# Логгер
+from loguru import logger
+import flet as ft
+
+from os.path import abspath, join
+
+
 class Constants:
 
     def __init__(self):
@@ -26,3 +33,22 @@ class Constants:
             raise AttributeError('Constants are not changeable!')
         else:
             super().__setattr__(name, value)
+
+
+constants = Constants()
+logger.remove()
+logger.add(
+    abspath(join('logs', '{time:YYYY-MM-DD  HH.mm.ss}.log')),  # Путь к файлу логов с динамическим именем
+    rotation=constants.ROTATION_LOGGER,  # Ротация логов каждый день
+    compression="zip",  # Использование zip-архива
+    level=constants.LEVEL_FILE_LOGGER,  # Уровень логирования
+    format=constants.FORMAT_LOGGER,  # Формат вывода
+    serialize=constants.SERIALIZE_LOGGER,  # Сериализация в JSON
+)
+
+# Вывод лога в консоль
+logger.add(
+    sink=print,
+    level=constants.LEVEL_CONSOLE_LOGGER,
+    format=constants.FORMAT_LOGGER,
+)
